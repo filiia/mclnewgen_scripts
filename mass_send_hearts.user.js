@@ -72,5 +72,6 @@ function sendHearts(){
   })
   .catch((error) => console.error('Error:', error));
 
+  alert("Sent hearts to everyone!");
 
 }
