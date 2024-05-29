@@ -1,39 +1,70 @@
 // ==UserScript==
-// @name         MCL NewGen mass send and receive hearts
-// @version      0.0.1
+// @name         MCL NewGen mass send and receive hearts (international version)
+// @version      0.0.2
 // @description  MCL NewGen mass send and receive hearts
 // @match        https://www.mycandylove-newgen.com/*
+// @match        https://www.amordoce-newgen.com/*
+// @match        https://www.sweetamoris-newgen.de/*
+// @match        https://www.corazondemelon-newgen.es/*
+// @match        https://www.amoursucre-newgen.com/*
+// @match        https://www.slodkiflirt-newgen.pl/*
 // @author       Filia
 // @grant window.onurlchange
 // ==/UserScript==
 
 
 window.addEventListener('urlchange', function() {
-  if (window.location.href === 'https://www.mycandylove-newgen.com/messaging') {
+  const base_domain = window.location.hostname;
+  let api_domain;
+  switch (base_domain) {
+    case 'www.mycandylove-newgen.com':
+        api_domain = 'api.mycandylove-newgen.com';
+        break;
+    case 'www.amordoce-newgen.com':
+        api_domain = 'api.amordoce-newgen.com';
+        break;
+    case 'www.sweetamoris-newgen.de':
+        api_domain = 'api.sweetamoris-newgen.de';
+        break;
+    case 'www.corazondemelon-newgen.es':
+        api_domain = 'api.corazondemelon-newgen.es';
+        break;
+    case 'www.amoursucre-newgen.com':
+        api_domain = 'api.amoursucre-newgen.com';
+        break;
+    case 'www.slodkiflirt-newgen.pl':
+        api_domain = 'api.slodkiflirt-newgen.pl';
+        break;
+    default:
+        console.log('Unknown domain.');
+  }
+
+
+  if (window.location.href === `https://${base_domain}/messaging`) {
       const receiveButton = document.createElement('button');
       receiveButton.textContent = 'Receive ❤️';
 
       // Add a click event listener to the button
       receiveButton.addEventListener('click', function() {
-      receiveHearts();
+      receiveHearts(api_domain);
       });
       const sendButton = document.createElement('button');
       sendButton.textContent = 'Send ❤️';
 
       // Add a click event listener to the button
       sendButton.addEventListener('click', function() {
-      sendHearts();
+      sendHearts(api_domain);
       });
 
       // Add the button to the page
       let h2Elements = document.querySelectorAll("h2");
-      let targetH2 = Array.from(h2Elements).find(h2 => h2.textContent.trim() === "Messages");
+      let targetH2 = Array.from(h2Elements).find(h2 => h2.textContent.trim() === "Messages" || h2.textContent.trim() === "Messagerie");
       targetH2.appendChild(receiveButton);
       targetH2.appendChild(sendButton);
   }
 });
 
-function receiveHearts(){
+function receiveHearts(api_domain){
   // Get the value of the "asng-auth" cookie
   const cookieValue = document.cookie
   .split('; ')
@@ -44,7 +75,7 @@ function receiveHearts(){
   .replace('"', '');
 
   // Send the GET request with the bearer token in the Authorization header
-  fetch('https://api.mycandylove-newgen.com/api/messaging', {
+  fetch(`https://${api_domain}/api/messaging`, {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${cookieValue}`,
@@ -56,7 +87,7 @@ function receiveHearts(){
     let conversations = data.data.playersPage.conversations;
     let conversationIds = conversations.filter(conversation => conversation.availableGiftedHeart === true).map(conversation => conversation.conversationId);
     conversationIds.forEach(id => {
-      fetch(`https://api.mycandylove-newgen.com/api/messaging/conversation/${id}`, {
+      fetch(`https://${api_domain}/api/messaging/conversation/${id}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${cookieValue}`,
@@ -71,7 +102,7 @@ function receiveHearts(){
           .map(message => message.id);
 
         const body = {};
-        fetch(`https://api.mycandylove-newgen.com/api/messaging/conversation/collect-heart/${receivedAvailableIds}`, {
+        fetch(`https://${api_domain}/api/messaging/conversation/collect-heart/${receivedAvailableIds}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${cookieValue}`,
@@ -87,7 +118,7 @@ function receiveHearts(){
 
 }
 
-function sendHearts(){
+function sendHearts(api_domain){
   // Get the value of the "asng-auth" cookie
   const cookieValue = document.cookie
   .split('; ')
@@ -98,7 +129,7 @@ function sendHearts(){
   .replace('"', '');
 
   // Send the POST request with the bearer token in the Authorization header
-  fetch('https://api.mycandylove-newgen.com/api/contact', {
+  fetch(`https://${api_domain}/api/contact`, {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${cookieValue}`,
@@ -111,7 +142,7 @@ function sendHearts(){
   friendIds.forEach(id => {
     const data = { playerId: id };
 
-    fetch('https://api.mycandylove-newgen.com/api/contact/send-heart', {
+    fetch(`https://${api_domain}/api/contact/send-heart`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${cookieValue}`,
