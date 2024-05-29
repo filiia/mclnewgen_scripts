@@ -58,7 +58,7 @@ window.addEventListener('urlchange', function() {
 
       // Add the button to the page
       let h2Elements = document.querySelectorAll("h2");
-      let targetH2 = Array.from(h2Elements).find(h2 => h2.textContent.trim() === "Messages" || h2.textContent.trim() === "Messagerie");
+      let targetH2 = Array.from(h2Elements).find(h2 => h2.textContent.trim() === "Messages" || h2.textContent.trim() === "Messagerie" || h2.textContent.trim() === "Mensajería" || h2.textContent.trim() === "Caixa de Mensagens" || h2.textContent.trim() === "Postfach" || h2.textContent.trim() === "Skrzynka");
       targetH2.appendChild(receiveButton);
       targetH2.appendChild(sendButton);
   }
